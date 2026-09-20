@@ -36,6 +36,10 @@ in
       }
     ];
 
+    warnings = lib.optional
+      (!config.hardware.bc250-amdgpu.enable)
+      "services.bc250-smu-patch is enabled without the amdgpu patches (hardware.bc250-amdgpu.enable); 8-core telemetry will read incorrectly.";
+
     boot.initrd.systemd.storePaths = closureOf [ cfg.package py ];
 
     boot.initrd.systemd.services.bc250-smu-patch = {

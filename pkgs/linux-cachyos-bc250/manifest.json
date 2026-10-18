@@ -1,7 +1,7 @@
 {
-  "version": "0-unstable-2026-10-10",
-  "rev": "15cd1264168857f35970962224cf2d44b5ba4762",
-  "hash": "sha256-hiNlP0TOO/Vi7YUEAQ/k9oBy/56ilvK8ne5FSbdwA3o=",
+  "version": "0-unstable-2026-10-16",
+  "rev": "de782faccd316608a4b7fd4faccfddd19df2a7df",
+  "hash": "sha256-H9YxMy/kG2LV1K8pqfq80QCrMEEs2lkqRj1+Ndn16Rg=",
   "kernel": "7_2",
   "proton": {
     "proton-cachyos-slr-bc250": {

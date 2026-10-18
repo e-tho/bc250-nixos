@@ -9,12 +9,21 @@
       inherit (nixpkgs) lib;
       system = "x86_64-linux";
 
+      # The Proton builds include NVIDIA components under an unfree
+      # license. This only allows them in this flake's own outputs; a
+      # system using them allows the license in its own configuration.
+      unfreeTools = [
+        "proton-cachyos-slr-bc250"
+        "protonge-latest-bc250"
+      ];
+
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ self.overlays.default ];
+        config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) unfreeTools;
       };
 
-      manifest = lib.importJSON ./pkgs/linux-cachyos-bc250-src/manifest.json;
+      manifest = lib.importJSON ./pkgs/linux-cachyos-bc250/manifest.json;
       kernelPackages = pkgs."linuxPackages_${manifest.kernel}";
 
       # Packages nix-update can bump, with the version source each follows.
@@ -65,12 +74,14 @@
           bc250-smu-unlock
           cyan-skillfish-governor-smu
           linux-cachyos-bc250-src
+          proton-cachyos-slr-bc250
+          protonge-latest-bc250
           ;
         bc250-kernel-modules = kernelPackages.callPackage ./pkgs/bc250-kernel-modules { };
         bc250-mesa-32 = pkgs.pkgsi686Linux.bc250-mesa;
       };
 
-      checks.${system} = self.packages.${system} // {
+      checks.${system} = removeAttrs self.packages.${system} unfreeTools // {
         eval-default = evalCheck "default" { };
         eval-unlocked = evalCheck "unlocked" {
           hardware.bc250.coreUnlock.enable = true;
@@ -99,8 +110,8 @@
                   nix-update --flake ${lib.escapeShellArgs flags} ${attr} || failed+=(${attr})
                 '') updatable
               )}
-              ${lib.getExe (pkgs.callPackage ./pkgs/linux-cachyos-bc250-src/update.nix { })} \
-                pkgs/linux-cachyos-bc250-src/manifest.json || failed+=(linux-cachyos-bc250-src)
+              ${lib.getExe (pkgs.callPackage ./pkgs/linux-cachyos-bc250/update.nix { })} \
+                pkgs/linux-cachyos-bc250/manifest.json || failed+=(linux-cachyos-bc250)
 
               if [ "''${#failed[@]}" -gt 0 ]; then
                 echo "failed to update: ''${failed[*]}" >&2

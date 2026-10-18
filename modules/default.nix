@@ -27,4 +27,7 @@
     pkgs.bc250-memcfg
     pkgs.bc250-smu-oc
   ];
+
+  # Proton uses it for Windows synchronization primitives when present.
+  boot.kernelModules = [ "ntsync" ];
 }

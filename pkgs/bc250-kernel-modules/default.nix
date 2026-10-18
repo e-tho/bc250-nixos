@@ -13,7 +13,7 @@
 }:
 
 let
-  manifest = lib.importJSON ../linux-cachyos-bc250-src/manifest.json;
+  manifest = lib.importJSON ../linux-cachyos-bc250/manifest.json;
 in
 kernel.stdenv.mkDerivation {
   pname = "bc250-kernel-modules";

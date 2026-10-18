@@ -10,5 +10,7 @@ final: prev: {
   bc250-smu-oc = final.callPackage ./bc250-smu-oc { };
   bc250-smu-unlock = final.callPackage ./bc250-smu-unlock { };
   cyan-skillfish-governor-smu = final.callPackage ./cyan-skillfish-governor-smu { };
-  linux-cachyos-bc250-src = final.callPackage ./linux-cachyos-bc250-src { };
+  linux-cachyos-bc250-src = final.callPackage ./linux-cachyos-bc250/src.nix { };
+  proton-cachyos-slr-bc250 = final.callPackage ./bc250-proton { pname = "proton-cachyos-slr-bc250"; };
+  protonge-latest-bc250 = final.callPackage ./bc250-proton { pname = "protonge-latest-bc250"; };
 }

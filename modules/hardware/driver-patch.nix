@@ -6,7 +6,7 @@
 }:
 
 let
-  manifest = lib.importJSON ../../pkgs/linux-cachyos-bc250-src/manifest.json;
+  manifest = lib.importJSON ../../pkgs/linux-cachyos-bc250/manifest.json;
   kernelAttr = "linuxPackages_${manifest.kernel}";
   targetVersion = lib.replaceStrings [ "_" ] [ "." ] manifest.kernel;
   runningVersion = lib.versions.majorMinor config.boot.kernelPackages.kernel.version;

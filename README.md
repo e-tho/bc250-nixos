@@ -41,6 +41,7 @@ The module applies its defaults on import.
 - **GPU governor**: adapts GPU clocks and voltage to load, through [cyan-skillfish-governor](https://github.com/filippor/cyan-skillfish-governor).
 - **Sensors**: fan and board sensors, through [nct6687d](https://github.com/Fred78290/nct6687d).
 - **Swap**: zswap with a 16 GB swap file. zram is refused, as it [crashes memory-hungry games](https://elektricm.github.io/amd-bc250-docs/system/power/#swap-and-zram-optimization) when the GPU takes memory on demand. Setting `swapDevices` replaces the default swap file.
+- **ntsync**: the kernel driver Proton uses for Windows synchronization primitives.
 
 `bc250-cu-live-manager`, `bc250-detect` and `bc250memcfg` are on the PATH.
 
@@ -123,6 +124,19 @@ services.bc250-smu-oc = {
 
 > [!WARNING]
 > Raising the frequency without undervolting can push the CPU voltage past safe limits and permanently damage the board.
+
+## Proton
+
+`proton-cachyos-slr-bc250` and `protonge-latest-bc250` are Proton builds with [HelixSR and FSR4 upscaling](https://github.com/MastaG/linux-cachyos-bc250/blob/main/docs/FSR4-PROTON.md) through OptiScaler. They require the patched drivers and are unfree, since they include NVIDIA components.
+
+```nix
+programs.steam.extraCompatPackages = [
+  pkgs.proton-cachyos-slr-bc250
+  pkgs.protonge-latest-bc250
+];
+```
+
+Select them per game in Steam, under Properties > Compatibility. They override the game's upscaler (ideally DLSS) with HelixSR in DirectX 12 games and FSR4 in DirectX 11 and Vulkan games. Set `PROTON_USE_OPTISCALER=fsr411f` in the launch options to use FSR4 in DirectX 12 games. OptiScaler's in-game overlay (opened by pressing Insert) shows the active upscaler.
 
 ## See also
 

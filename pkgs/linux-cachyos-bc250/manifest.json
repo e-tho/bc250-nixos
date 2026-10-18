@@ -1,0 +1,16 @@
+{
+  "version": "0-unstable-2026-10-10",
+  "rev": "15cd1264168857f35970962224cf2d44b5ba4762",
+  "hash": "sha256-hiNlP0TOO/Vi7YUEAQ/k9oBy/56ilvK8ne5FSbdwA3o=",
+  "kernel": "7_2",
+  "proton": {
+    "proton-cachyos-slr-bc250": {
+      "version": "11.0.20261005-304",
+      "hash": "sha256-1/QnsGCW+yZACSJquE8gGM/qFcoQ3WNXFkJO4+Gwzvg="
+    },
+    "protonge-latest-bc250": {
+      "version": "11.9-304",
+      "hash": "sha256-h6Qlxo54iOb92xHGZLxjfDt4TrwXpx/FJVxRB4ulSeM="
+    }
+  }
+}

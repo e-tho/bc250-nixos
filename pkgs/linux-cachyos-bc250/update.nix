@@ -20,11 +20,12 @@ writeShellApplication {
     nix
   ];
 
-  # Takes the manifest path and updates the source revision and the
-  # Proton builds paired with it: the revision the release workflow last
-  # built, and the newest build of each tool at or below that run, since
-  # builds carry the run number and tools are only rebuilt when their
-  # inputs change. A run that fails before rebuilding a tool leaves it
+  # Takes the manifest path and updates the source revision and what is
+  # paired with it: the Mesa version the patches are rebased onto, and the
+  # Proton builds. The revision is the one the release workflow last
+  # built, and each paired item is the newest build at or below that run,
+  # since builds carry the run number and are only rebuilt when their
+  # inputs change. A run that fails before rebuilding something leaves it
   # paired with its previous build. The kernel branch is only checked,
   # against this project's nixpkgs, so this runs from the project root.
   text = ''
@@ -50,6 +51,26 @@ writeShellApplication {
     read -r rev run date <<<"$latest"
 
     sums=$(curl -fsSL "https://github.com/$owner/$repo/releases/download/repo/SHA256SUMS")
+
+    mesa_version=$(awk -v run="$run" '
+      {
+        n = split($2, parts, "-")
+        if (n != 5 || parts[1] != "vulkan" || parts[2] != "radeon") next
+        m = split(parts[4], rel, ".")
+        if (rel[m] !~ /^[0-9]+$/ || rel[m] + 0 > run + 0) next
+        if (rel[m] + 0 > best) { best = rel[m] + 0; found = parts[3] }
+      }
+      END { if (found) print found }
+    ' <<<"$sums")
+    if [ -z "$mesa_version" ]; then
+      echo "error: no Mesa build at or before run $run; nothing was updated" >&2
+      exit 1
+    fi
+    if [ "$mesa_version" = "$(jq -r '.mesa.version // empty' "$manifest")" ]; then
+      mesa_hash=$(jq -r .mesa.hash "$manifest")
+    else
+      mesa_hash=$(nix store prefetch-file --json "https://archive.mesa3d.org/mesa-$mesa_version.tar.xz" | jq -r .hash)
+    fi
 
     proton='{}'
     for tool in "''${tools[@]}"; do
@@ -78,8 +99,8 @@ writeShellApplication {
     done
 
     # shellcheck disable=SC2016
-    filter='.proton = $proton'
-    args=(--argjson proton "$proton")
+    filter='.mesa = {version: $mesa_version, hash: $mesa_hash} | .proton = $proton'
+    args=(--arg mesa_version "$mesa_version" --arg mesa_hash "$mesa_hash" --argjson proton "$proton")
     if [ "$rev" != "$(jq -r .rev "$manifest")" ]; then
       src_hash=$(nix flake prefetch --json "github:$owner/$repo/$rev" | jq -r .hash)
       # shellcheck disable=SC2016

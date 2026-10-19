@@ -12,5 +12,9 @@
       "version": "11.9-304",
       "hash": "sha256-h6Qlxo54iOb92xHGZLxjfDt4TrwXpx/FJVxRB4ulSeM="
     }
+  },
+  "mesa": {
+    "version": "26.2.4",
+    "hash": "sha256-vOX3++u5NDc7hsmZoGTVL7UGWHjcV/KH+VNGZI7IMuk="
   }
 }

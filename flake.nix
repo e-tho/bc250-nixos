@@ -122,6 +122,6 @@
         );
       };
 
-      formatter.${system} = pkgs.nixfmt;
+      formatter.${system} = pkgs.nixfmt-tree;
     };
 }

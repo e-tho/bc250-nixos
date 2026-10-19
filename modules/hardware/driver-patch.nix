@@ -12,11 +12,15 @@ let
   runningVersion = lib.versions.majorMinor config.boot.kernelPackages.kernel.version;
 in
 {
-  options.hardware.bc250.driverPatch.enable = lib.mkEnableOption ''
-    the kernel drivers and Mesa with the BC-250 patch series from
-    linux-cachyos-bc250, for its fixes and optimizations, on the kernel
-    version the series targets
-  '' // { default = true; };
+  options.hardware.bc250.driverPatch.enable =
+    lib.mkEnableOption ''
+      the kernel drivers and Mesa with the BC-250 patch series from
+      linux-cachyos-bc250, for its fixes and optimizations, on the kernel
+      version the series targets
+    ''
+    // {
+      default = true;
+    };
 
   config = lib.mkMerge [
     (lib.mkIf config.hardware.bc250.driverPatch.enable {

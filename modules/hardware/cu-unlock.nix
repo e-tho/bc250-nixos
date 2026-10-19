@@ -13,7 +13,9 @@ let
     let
       parts = map lib.toInt (lib.splitString "." pair);
     in
-    "${toString (lib.elemAt parts 0)}.${toString (lib.elemAt parts 1)}.${toString (2 * lib.elemAt parts 2)}";
+    "${toString (lib.elemAt parts 0)}.${toString (lib.elemAt parts 1)}.${
+      toString (2 * lib.elemAt parts 2)
+    }";
 in
 {
   options.hardware.bc250.cuUnlock = {
@@ -45,6 +47,8 @@ in
     boot.kernelParams = [
       "amdgpu.bc250_cc_write_mode=3"
     ]
-    ++ lib.optional (cfg.exclude != [ ]) "amdgpu.disable_cu=${lib.concatMapStringsSep "," toUnit cfg.exclude}";
+    ++
+      lib.optional (cfg.exclude != [ ])
+        "amdgpu.disable_cu=${lib.concatMapStringsSep "," toUnit cfg.exclude}";
   };
 }

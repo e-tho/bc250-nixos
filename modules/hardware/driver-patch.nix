@@ -38,10 +38,15 @@ in
         hardware.bc250.driverPatch: the patch series targets Linux ${targetVersion}, but the
         kernel is ${runningVersion}. The patches may not apply.
       '';
-      # The patched driver reports GPU load itself.
-      services.cyan-skillfish-governor-smu.settings.gpu-usage = {
-        method = lib.mkDefault "kernel";
-        fix-metrics = lib.mkDefault false;
+
+      # The patched driver reports GPU load itself and accepts the full
+      # clock range, so the governor can set clocks through it.
+      services.cyan-skillfish-governor-smu.settings = {
+        gpu-usage = {
+          method = lib.mkDefault "kernel";
+          fix-metrics = lib.mkDefault false;
+        };
+        gpu.set-method = lib.mkDefault "kernel";
       };
     })
 

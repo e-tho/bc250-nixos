@@ -79,7 +79,7 @@ kernel.stdenv.mkDerivation {
     runHook preInstall
 
     while read -r dir; do
-      make INSTALL_MOD_PATH="$out" XZ="xz -T$NIX_BUILD_CORES" M="$dir" modules_install
+      make INSTALL_MOD_PATH="$out" XZ="xz -T$NIX_BUILD_CORES" INSTALL_MOD_STRIP=1 M="$dir" modules_install
     done < module-dirs
 
     runHook postInstall

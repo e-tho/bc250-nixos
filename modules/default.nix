@@ -14,8 +14,6 @@
     ./services/cyan-skillfish-governor-smu.nix
   ];
 
-  nixpkgs.overlays = [ (import ../pkgs) ];
-
   services.cyan-skillfish-governor-smu = {
     enable = lib.mkDefault true;
     # Lets the performance-mode script reach the governor.

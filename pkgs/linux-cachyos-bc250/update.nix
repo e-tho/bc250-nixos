@@ -27,7 +27,8 @@ writeShellApplication {
   # since builds carry the run number and are only rebuilt when their
   # inputs change. A run that fails before rebuilding something leaves it
   # paired with its previous build. The kernel branch is only checked,
-  # against this project's nixpkgs, so this runs from the project root.
+  # against the CachyOS kernel this project pins, so this runs from the
+  # project root.
   text = ''
     manifest=''${1:?usage: update-linux-cachyos-bc250 <manifest.json>}
     owner=MastaG
@@ -36,8 +37,10 @@ writeShellApplication {
     tools=(proton-cachyos-slr-bc250 protonge-latest-bc250)
 
     kernel=$(jq -r .kernel "$manifest")
-    if ! nix eval --raw --inputs-from . "nixpkgs#linuxPackages_$kernel.kernel.version" >/dev/null; then
-      echo "error: nixpkgs no longer has linuxPackages_$kernel; set the kernel the series now targets in $manifest" >&2
+    cachyos=$(nix eval --raw --inputs-from . \
+      chaotic#legacyPackages.x86_64-linux.linuxPackages_cachyos.kernel.version < /dev/null)
+    if [[ "$cachyos" != "$kernel".* ]]; then
+      echo "error: the CachyOS kernel is $cachyos, but the patch series targets $kernel; update the flake lock or set the branch the series now targets in $manifest" >&2
       exit 1
     fi
 

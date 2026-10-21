@@ -2,9 +2,16 @@
   description = "NixOS hardware support for the AMD BC-250";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  # Not following nixpkgs: the CachyOS kernel only comes from the
+  # binary cache when built against the nixpkgs this input pins.
+  inputs.chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
 
   outputs =
-    { self, nixpkgs }:
+    {
+      self,
+      nixpkgs,
+      chaotic,
+    }:
     let
       inherit (nixpkgs) lib;
       system = "x86_64-linux";
@@ -23,8 +30,7 @@
         config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) unfreeTools;
       };
 
-      manifest = lib.importJSON ./pkgs/linux-cachyos-bc250/manifest.json;
-      kernelPackages = pkgs."linuxPackages_${manifest.kernel}";
+      kernelPackages = pkgs.bc250-linuxPackages;
 
       # Packages nix-update can bump, with the version source each follows.
       updatable = {
@@ -59,9 +65,22 @@
         pkgs.writeText "eval-${name}" (builtins.unsafeDiscardStringContext (evalSystem extra).drvPath);
     in
     {
-      overlays.default = import ./pkgs;
+      overlays.default = lib.composeExtensions (import ./pkgs) (
+        final: prev: {
+          bc250-linuxPackages =
+            chaotic.legacyPackages.${final.stdenv.hostPlatform.system}.linuxPackages_cachyos;
+          # The nixpkgs the CachyOS kernel is built against, for building
+          # the patched modules: its plain build environment is cached,
+          # unlike the kernel's own.
+          bc250-kernelBuildPackages =
+            chaotic.inputs.nixpkgs.legacyPackages.${final.stdenv.hostPlatform.system};
+        }
+      );
 
-      nixosModules.default = ./modules;
+      nixosModules.default = {
+        imports = [ ./modules ];
+        nixpkgs.overlays = [ self.overlays.default ];
+      };
 
       packages.${system} = {
         inherit (pkgs)
@@ -77,7 +96,10 @@
           proton-cachyos-slr-bc250
           protonge-latest-bc250
           ;
-        bc250-kernel-modules = kernelPackages.callPackage ./pkgs/bc250-kernel-modules { };
+        bc250-kernel-modules = pkgs.bc250-kernelBuildPackages.callPackage ./pkgs/bc250-kernel-modules {
+          inherit (kernelPackages) kernel;
+          inherit (pkgs) linux-cachyos-bc250-src;
+        };
         bc250-mesa-32 = pkgs.pkgsi686Linux.bc250-mesa;
       };
 

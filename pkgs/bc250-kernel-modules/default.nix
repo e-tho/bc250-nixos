@@ -3,39 +3,59 @@
 # touch; a patch changing anything outside a known module fails the build.
 {
   lib,
+  stdenv,
   kernel,
   linux-cachyos-bc250-src,
   bc,
   bison,
+  elfutils,
   flex,
+  openssl,
+  pahole,
+  perl,
   python3,
   zlib,
+  zstd,
 }:
 
 let
   manifest = lib.importJSON ../linux-cachyos-bc250/manifest.json;
+
+  # The kernel's own make arguments select the compiler and tools it was
+  # built with. The output directory is left out, as the modules are
+  # built in the source tree.
+  kmake = "make ${
+    lib.escapeShellArgs (lib.filter (flag: !lib.hasPrefix "O=" flag) kernel.makeFlags)
+  }";
 in
-kernel.stdenv.mkDerivation {
+stdenv.mkDerivation {
   pname = "bc250-kernel-modules";
   version = "${kernel.version}-${manifest.version}";
 
   inherit (kernel) src;
 
-  # The patches nixpkgs applies to the running kernel, so the modules are
-  # built from the same source.
+  # The patches applied to the running kernel, so the modules are built
+  # from the same source.
   patches = map (p: p.patch) (
     lib.filter (p: (p.patch or null) != null) (kernel.kernelPatches or [ ])
   );
 
-  nativeBuildInputs = kernel.moduleBuildDependencies ++ [
+  nativeBuildInputs = [
     bc
     bison
     flex
+    pahole
+    perl
     python3
+    zstd
   ];
 
   # Needed to prepare the kernel tree for building modules.
-  buildInputs = [ zlib ];
+  buildInputs = [
+    elfutils
+    openssl
+    zlib
+  ];
 
   postPatch = (kernel.postPatch or "") + ''
     : > module-dirs
@@ -67,9 +87,9 @@ kernel.stdenv.mkDerivation {
     cp "$build/Module.symvers" "$build/.config" .
     cp ${kernel.dev}/vmlinux .
 
-    make -j"$NIX_BUILD_CORES" modules_prepare
+    ${kmake} -j"$NIX_BUILD_CORES" modules_prepare
     while read -r dir; do
-      make -j"$NIX_BUILD_CORES" M="$dir" modules
+      ${kmake} -j"$NIX_BUILD_CORES" M="$dir" modules
     done < module-dirs
 
     runHook postBuild
@@ -79,7 +99,7 @@ kernel.stdenv.mkDerivation {
     runHook preInstall
 
     while read -r dir; do
-      make INSTALL_MOD_PATH="$out" XZ="xz -T$NIX_BUILD_CORES" INSTALL_MOD_STRIP=1 M="$dir" modules_install
+      ${kmake} INSTALL_MOD_PATH="$out" INSTALL_MOD_STRIP=1 M="$dir" modules_install
     done < module-dirs
 
     runHook postInstall

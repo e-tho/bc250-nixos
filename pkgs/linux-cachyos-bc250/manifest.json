@@ -2,7 +2,7 @@
   "version": "0-unstable-2026-10-19",
   "rev": "561d1b25c308136ede115b6814d7efd8918a3adb",
   "hash": "sha256-5laENrrAyfQvYGUH3Htur8M/R2eOrNR8CED32IiT0BE=",
-  "kernel": "7_2",
+  "kernel": "7.2",
   "proton": {
     "proton-cachyos-slr-bc250": {
       "version": "11.0.20261014-320",

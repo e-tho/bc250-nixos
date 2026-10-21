@@ -34,10 +34,19 @@ The project tracks NixOS unstable. Add the flake and import its module:
 
 The module applies its defaults on import.
 
+The kernel comes from [Chaotic Nyx](https://github.com/chaotic-cx/nyx). To avoid building it locally on the first rebuild, pass its binary cache on the command line:
+
+```console
+sudo nixos-rebuild switch --flake .#my-host --option extra-substituters https://nyx-cache.chaotic.cx/ --option extra-trusted-public-keys nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=
+```
+
+Later rebuilds use the cache configured by the module.
+
 ## Defaults
 
 - **ACPI fix**: CPU frequency scaling and idle states, through [corrected ACPI tables](https://github.com/e-tho/bc250-acpi-fix).
-- **Patched drivers**: fixes and optimizations for the kernel drivers and Mesa, from the [linux-cachyos-bc250](https://github.com/MastaG/linux-cachyos-bc250/blob/main/docs/PATCHES.md) patch series, on the kernel version it targets.
+- **Patched drivers**: fixes and optimizations for the kernel drivers and Mesa, from the [linux-cachyos-bc250](https://github.com/MastaG/linux-cachyos-bc250/blob/main/docs/PATCHES.md) patch series.
+- **Kernel**: the CachyOS kernel from [Chaotic Nyx](https://github.com/chaotic-cx/nyx), which the patch series targets.
 - **GPU governor**: adapts GPU clocks and voltage to load, through [cyan-skillfish-governor](https://github.com/filippor/cyan-skillfish-governor).
 - **Sensors**: fan and board sensors, through [nct6687d](https://github.com/Fred78290/nct6687d).
 - **Swap**: zswap with a 16 GB swap file. zram is refused, as it [crashes memory-hungry games](https://elektricm.github.io/amd-bc250-docs/system/power/#swap-and-zram-optimization) when the GPU takes memory on demand. Setting `swapDevices` replaces the default swap file.

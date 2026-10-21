@@ -7,16 +7,14 @@
 
 let
   manifest = lib.importJSON ../../pkgs/linux-cachyos-bc250/manifest.json;
-  kernelAttr = "linuxPackages_${manifest.kernel}";
-  targetVersion = lib.replaceStrings [ "_" ] [ "." ] manifest.kernel;
-  runningVersion = lib.versions.majorMinor config.boot.kernelPackages.kernel.version;
+  kernel = config.boot.kernelPackages.kernel;
+  runningVersion = lib.versions.majorMinor kernel.version;
 in
 {
   options.hardware.bc250.driverPatch.enable =
     lib.mkEnableOption ''
       the kernel drivers and Mesa with the BC-250 patch series from
-      linux-cachyos-bc250, for its fixes and optimizations, on the kernel
-      version the series targets
+      linux-cachyos-bc250, on the CachyOS kernel the series targets
     ''
     // {
       default = true;
@@ -24,13 +22,21 @@ in
 
   config = lib.mkMerge [
     (lib.mkIf config.hardware.bc250.driverPatch.enable {
-      boot.kernelPackages = lib.mkDefault (
-        pkgs.${kernelAttr}
-          or (throw "hardware.bc250.driverPatch: nixpkgs has no ${kernelAttr}, which the patch series targets")
-      );
+      # The CachyOS kernel the patch series is made for.
+      boot.kernelPackages = lib.mkDefault pkgs.bc250-linuxPackages;
+
+      nix.settings = {
+        substituters = [ "https://nyx-cache.chaotic.cx/" ];
+        trusted-public-keys = [ "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=" ];
+      };
 
       boot.extraModulePackages = [
-        (config.boot.kernelPackages.callPackage ../../pkgs/bc250-kernel-modules { })
+        # Built with the plain package set of the kernel's nixpkgs, as the
+        # binary cache does not cover the kernel's own build environment.
+        (pkgs.bc250-kernelBuildPackages.callPackage ../../pkgs/bc250-kernel-modules {
+          inherit (config.boot.kernelPackages) kernel;
+          inherit (pkgs) linux-cachyos-bc250-src;
+        })
       ];
 
       # Replaces the Mesa nixpkgs picks by default; a value set directly in a
@@ -38,10 +44,15 @@ in
       hardware.graphics.package = lib.mkOverride 900 pkgs.bc250-mesa;
       hardware.graphics.package32 = lib.mkOverride 900 pkgs.pkgsi686Linux.bc250-mesa;
 
-      warnings = lib.optional (runningVersion != targetVersion) ''
-        hardware.bc250.driverPatch: the patch series targets Linux ${targetVersion}, but the
-        kernel is ${runningVersion}. The patches may not apply.
-      '';
+      warnings =
+        lib.optional (runningVersion != manifest.kernel) ''
+          hardware.bc250.driverPatch: the patch series targets Linux ${manifest.kernel}, but the
+          kernel is ${runningVersion}. The patched drivers may fail to build or misbehave.
+        ''
+        ++ lib.optional (!lib.hasSuffix "-cachyos" kernel.modDirVersion) ''
+          hardware.bc250.driverPatch: the patch series is made for the CachyOS kernel. On
+          another kernel, features that depend on CachyOS changes may be missing.
+        '';
 
       # The patched driver reports GPU load itself and accepts the full
       # clock range, so the governor can set clocks through it.

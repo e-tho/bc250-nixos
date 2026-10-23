@@ -8,7 +8,7 @@
     ./hardware/cu-unlock.nix
     ./hardware/driver-patch.nix
     ./hardware/sensors.nix
-    ./hardware/smu-unlock.nix
+    ./hardware/smu-patch.nix
     ./hardware/vram.nix
     ./services/bc250-smu-oc.nix
     ./services/cyan-skillfish-governor-smu.nix

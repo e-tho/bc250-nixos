@@ -8,7 +8,7 @@ final: prev: {
   bc250-memcfg = final.callPackage ./bc250-memcfg { };
   bc250-mesa = final.callPackage ./bc250-mesa { };
   bc250-smu-oc = final.callPackage ./bc250-smu-oc { };
-  bc250-smu-unlock = final.callPackage ./bc250-smu-unlock { };
+  bc250-smu-patch = final.callPackage ./bc250-smu-patch { };
   cyan-skillfish-governor-smu = final.callPackage ./cyan-skillfish-governor-smu { };
   linux-cachyos-bc250-src = final.callPackage ./linux-cachyos-bc250/src.nix { };
   proton-cachyos-slr-bc250 = final.callPackage ./bc250-proton { pname = "proton-cachyos-slr-bc250"; };

@@ -45,7 +45,7 @@ in
         "initrd-root-device.target"
         "systemd-udevd.service"
         "systemd-modules-load.service"
-        "bc250-smu-unlock.service"
+        "bc250-smu-patch.service"
       ];
       unitConfig.DefaultDependencies = false;
       serviceConfig = {

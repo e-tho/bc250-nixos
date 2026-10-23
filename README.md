@@ -86,7 +86,7 @@ services.bc250-smu-oc = {
 
 `hardware.bc250.coreUnlock.enable` unlocks the 2 factory-disabled CPU cores, through [bc250-core-unlock](https://github.com/rw-r-r-0644/bc250-core-unlock). The unlock is reapplied on each cold boot and triggers a reboot to bring the cores up. Appending `bc250.nocoreunlock` to the kernel command line from the bootloader menu skips it for one boot. The cores stay unlocked until the board is powered off, even after disabling the option or appending the parameter. Stress-test the extra cores before use.
 
-With the patched drivers, the SMU firmware is also patched at boot through [bc250-smu-unlock](https://github.com/rw-r-r-0644/bc250-smu-unlock), so CPU metrics cover all 8 cores. The patch requires BIOS P3.00.
+With the patched drivers, the SMU firmware is also patched at boot through [bc250-smu-patch](https://github.com/e-tho/bc250-smu-patch), so CPU metrics cover all 8 cores. The patch requires BIOS P3.00.
 
 > [!WARNING]
 > On BIOS versions other than P3.00, the core unlock and the patched drivers are incompatible: the driver then misreads the GPU temperature used for thermal throttling.

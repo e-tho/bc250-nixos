@@ -7,12 +7,12 @@
 
 let
   cfg = config.hardware.bc250;
-  package = pkgs.bc250-smu-unlock;
+  package = pkgs.bc250-smu-patch;
 
   # The patch addresses only hold for this BIOS version.
   supportedBios = "P3.00";
 
-  apply = pkgs.writeShellScript "bc250-smu-unlock" ''
+  apply = pkgs.writeShellScript "bc250-smu-patch" ''
     # The driver decodes the 8-core layout only when it finds 8 cores, which
     # the core unlock may not have brought up.
     read -r cpus < /sys/devices/system/cpu/present
@@ -29,7 +29,7 @@ let
   '';
 in
 {
-  options.hardware.bc250.smuUnlock.enable = lib.mkOption {
+  options.hardware.bc250.smuPatch.enable = lib.mkOption {
     type = lib.types.bool;
     internal = true;
     default = cfg.coreUnlock.enable && cfg.driverPatch.enable;
@@ -40,24 +40,23 @@ in
     '';
   };
 
-  config = lib.mkIf cfg.smuUnlock.enable {
+  config = lib.mkIf cfg.smuPatch.enable {
     boot.initrd.systemd.enable = lib.mkDefault true;
 
     # The initrd copies these paths and the libraries their binaries link
-    # to, but not the interpreters the scripts refer to.
+    # to, but not the shell the wrapper script runs with.
     boot.initrd.systemd.storePaths = [
       apply
       package
       pkgs.bash
-      pkgs.python3
     ];
 
-    boot.initrd.systemd.services.bc250-smu-unlock = {
+    boot.initrd.systemd.services.bc250-smu-patch = {
       description = "Patch BC-250 SMU firmware memory";
       wantedBy = [ "initrd.target" ];
       after = [ "bc250-core-unlock.service" ];
       # Runs before the GPU driver loads, since it picks its metrics layout
-      # then.
+      # then and takes over the queue 2 SMU mailbox.
       before = [
         "initrd-root-device.target"
         "systemd-udevd.service"

@@ -38,7 +38,7 @@
         bc250-cu-live-manager = [ "--version=branch" ];
         bc250-memcfg = [ "--version=branch" ];
         bc250-smu-oc = [ "--version=branch" ];
-        bc250-smu-unlock = [ "--version=branch" ];
+        bc250-smu-patch = [ "--version=branch" ];
         cyan-skillfish-governor-smu = [ "--version=branch=smu" ];
       };
 
@@ -90,7 +90,7 @@
           bc250-memcfg
           bc250-mesa
           bc250-smu-oc
-          bc250-smu-unlock
+          bc250-smu-patch
           cyan-skillfish-governor-smu
           linux-cachyos-bc250-src
           proton-cachyos-slr-bc250

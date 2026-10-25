@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = false
+      - run: nix fmt -- --ci
+
+  build:
+    needs: check
+    runs-on: ubuntu-latest
+    env:
+      # The kernel comes from the Chaotic Nyx cache.
+      NYX: >-
+        --option extra-substituters https://nyx-cache.chaotic.cx/
+        --option extra-trusted-public-keys nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = false
+      - uses: cachix/cachix-action@v17
+        with:
+          name: bc250-nixos
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          # Pull requests read the cache, but only main pushes to it.
+          skipPush: ${{ github.event_name != 'push' }}
+          # Sources and debug symbols are not worth caching.
+          pushFilter: '(-source$|-vendor(-staging)?$|-debug$|\.tar\.(gz|xz|zst)$)'
+      - name: Check and build
+        run: nix flake check --print-build-logs $NYX

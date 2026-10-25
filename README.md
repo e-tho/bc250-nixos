@@ -34,13 +34,13 @@ The project tracks NixOS unstable. Add the flake and import its module:
 
 The module applies its defaults on import.
 
-The kernel comes from [Chaotic Nyx](https://github.com/chaotic-cx/nyx). To avoid building it locally on the first rebuild, pass its binary cache on the command line:
+The kernel comes from [Chaotic Nyx](https://github.com/chaotic-cx/nyx), and the other packages from this project's binary cache. To avoid building them locally on the first rebuild, pass both caches on the command line:
 
 ```console
-sudo nixos-rebuild switch --flake .#my-host --option extra-substituters https://nyx-cache.chaotic.cx/ --option extra-trusted-public-keys nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=
+sudo nixos-rebuild switch --flake .#my-host --option extra-substituters "https://nyx-cache.chaotic.cx/ https://bc250-nixos.cachix.org" --option extra-trusted-public-keys "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk= bc250-nixos.cachix.org-1:sOceaxECzHXj5Qx+TMIm183ISclrIp3lGJTcxS/V+dQ="
 ```
 
-Later rebuilds use the cache configured by the module.
+Later rebuilds use the caches configured by the module.
 
 ## Defaults
 

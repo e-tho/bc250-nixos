@@ -14,6 +14,11 @@
     ./services/cyan-skillfish-governor-smu.nix
   ];
 
+  nix.settings = {
+    substituters = [ "https://bc250-nixos.cachix.org" ];
+    trusted-public-keys = [ "bc250-nixos.cachix.org-1:sOceaxECzHXj5Qx+TMIm183ISclrIp3lGJTcxS/V+dQ=" ];
+  };
+
   services.cyan-skillfish-governor-smu = {
     enable = lib.mkDefault true;
     # Lets the performance-mode script reach the governor.

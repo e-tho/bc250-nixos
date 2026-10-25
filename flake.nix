@@ -100,7 +100,6 @@
           inherit (kernelPackages) kernel;
           inherit (pkgs) linux-cachyos-bc250-src;
         };
-        bc250-mesa-32 = pkgs.pkgsi686Linux.bc250-mesa;
       };
 
       checks.${system} = removeAttrs self.packages.${system} unfreeTools // {

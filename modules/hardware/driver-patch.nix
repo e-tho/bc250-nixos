@@ -39,10 +39,10 @@ in
         })
       ];
 
-      # Replaces the Mesa nixpkgs picks by default; a value set directly in a
-      # configuration still takes precedence.
+      # Overrides the default Mesa; an explicit setting still takes
+      # precedence. The 32-bit driver remains stock, as the patch series has
+      # no effect on 32-bit processes.
       hardware.graphics.package = lib.mkOverride 900 pkgs.bc250-mesa;
-      hardware.graphics.package32 = lib.mkOverride 900 pkgs.pkgsi686Linux.bc250-mesa;
 
       warnings =
         lib.optional (runningVersion != manifest.kernel) ''

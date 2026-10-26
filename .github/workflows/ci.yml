@@ -37,8 +37,8 @@ jobs:
         with:
           name: bc250-nixos
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          # Pull requests read the cache, but only main pushes to it.
-          skipPush: ${{ github.event_name != 'push' }}
+          # Only forks skip the push, so merges reuse the pull request's builds.
+          skipPush: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork }}
           # Sources are fetched from upstream, so only builds are cached.
           pushFilter: '(-source$|-vendor(-staging)?$|\.tar\.(gz|xz|zst)$)'
       - name: Check and build

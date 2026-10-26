@@ -41,8 +41,6 @@ in
   };
 
   config = lib.mkIf cfg.smuPatch.enable {
-    boot.initrd.systemd.enable = lib.mkDefault true;
-
     # The initrd copies these paths and the libraries their binaries link
     # to, but not the shell the wrapper script runs with.
     boot.initrd.systemd.storePaths = [

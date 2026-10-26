@@ -18,15 +18,6 @@ in
   '';
 
   config = lib.mkIf config.hardware.bc250.coreUnlock.enable {
-    assertions = [
-      {
-        assertion = config.boot.initrd.systemd.enable;
-        message = "hardware.bc250.coreUnlock runs in the initrd and needs boot.initrd.systemd.enable.";
-      }
-    ];
-
-    boot.initrd.systemd.enable = lib.mkDefault true;
-
     # The initrd copies these paths and the libraries their binaries link
     # to, but not the shell and the tools the script refers to.
     boot.initrd.systemd.storePaths = [

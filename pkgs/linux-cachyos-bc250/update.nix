@@ -21,28 +21,20 @@ writeShellApplication {
   ];
 
   # Takes the manifest path and updates the source revision and what is
-  # paired with it: the Mesa version the patches are rebased onto, and the
-  # Proton builds. The revision is the one the release workflow last
-  # built, and each paired item is the newest build at or below that run,
-  # since builds carry the run number and are only rebuilt when their
-  # inputs change. A run that fails before rebuilding something leaves it
-  # paired with its previous build. The kernel branch is only checked,
-  # against the CachyOS kernel this project pins, so this runs from the
-  # project root.
+  # paired with it: the kernel branch and Mesa version the patches are
+  # rebased onto, and the Proton builds. The revision is the one the
+  # release workflow last built, and each paired item is the newest build
+  # at or below that run, since builds carry the run number and are only
+  # rebuilt when their inputs change. A run that fails before rebuilding
+  # something leaves it paired with its previous build. Nothing is written
+  # unless the CachyOS kernel this project pins is on the same branch, so
+  # this runs from the project root.
   text = ''
     manifest=''${1:?usage: update-linux-cachyos-bc250 <manifest.json>}
     owner=MastaG
     repo=linux-cachyos-bc250
     api="https://api.github.com/repos/$owner/$repo"
     tools=(proton-cachyos-slr-bc250 protonge-latest-bc250)
-
-    kernel=$(jq -r .kernel "$manifest")
-    cachyos=$(nix eval --raw --inputs-from . \
-      chaotic#legacyPackages.x86_64-linux.linuxPackages_cachyos.kernel.version < /dev/null)
-    if [[ "$cachyos" != "$kernel".* ]]; then
-      echo "error: the CachyOS kernel is $cachyos, but the patch series targets $kernel; update the flake lock or set the branch the series now targets in $manifest" >&2
-      exit 1
-    fi
 
     branch=$(curl -fsSL "$api" | jq -r .default_branch)
     latest=$(curl -fsSL "$api/actions/workflows/build-release.yml/runs?branch=$branch&status=completed&per_page=1" |
@@ -54,6 +46,34 @@ writeShellApplication {
     read -r rev run date <<<"$latest"
 
     sums=$(curl -fsSL "https://github.com/$owner/$repo/releases/download/repo/SHA256SUMS")
+
+    # The main kernel package, linux-cachyos-bc250-<version>-<rel>.<run>,
+    # which excludes its headers and the other kernel flavours.
+    kernel=$(awk -v run="$run" '
+      {
+        n = split($2, parts, "-")
+        if (n != 6 || parts[1] "-" parts[2] "-" parts[3] != "linux-cachyos-bc250") next
+        if (parts[4] !~ /^[0-9]+\.[0-9]+(\.[0-9]+)?$/ || parts[6] != "x86_64.pkg.tar.zst") next
+        m = split(parts[5], rel, ".")
+        if (rel[m] !~ /^[0-9]+$/ || rel[m] + 0 > run + 0) next
+        if (rel[m] + 0 > best) {
+          best = rel[m] + 0
+          split(parts[4], version, ".")
+          found = version[1] "." version[2]
+        }
+      }
+      END { if (found) print found }
+    ' <<<"$sums")
+    if [ -z "$kernel" ]; then
+      echo "error: no kernel build at or before run $run; nothing was updated" >&2
+      exit 1
+    fi
+    cachyos=$(nix eval --raw --inputs-from . \
+      chaotic#legacyPackages.x86_64-linux.linuxPackages_cachyos.kernel.version < /dev/null)
+    if [[ "$cachyos" != "$kernel".* ]]; then
+      echo "error: the patch series targets Linux $kernel, but the CachyOS kernel is $cachyos; nothing was updated" >&2
+      exit 1
+    fi
 
     mesa_version=$(awk -v run="$run" '
       {
@@ -102,8 +122,8 @@ writeShellApplication {
     done
 
     # shellcheck disable=SC2016
-    filter='.mesa = {version: $mesa_version, hash: $mesa_hash} | .proton = $proton'
-    args=(--arg mesa_version "$mesa_version" --arg mesa_hash "$mesa_hash" --argjson proton "$proton")
+    filter='.kernel = $kernel | .mesa = {version: $mesa_version, hash: $mesa_hash} | .proton = $proton'
+    args=(--arg kernel "$kernel" --arg mesa_version "$mesa_version" --arg mesa_hash "$mesa_hash" --argjson proton "$proton")
     if [ "$rev" != "$(jq -r .rev "$manifest")" ]; then
       src_hash=$(nix flake prefetch --json "github:$owner/$repo/$rev" | jq -r .hash)
       # shellcheck disable=SC2016

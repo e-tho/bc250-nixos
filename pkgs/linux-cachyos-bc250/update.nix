@@ -72,7 +72,7 @@ writeShellApplication {
       chaotic#legacyPackages.x86_64-linux.linuxPackages_cachyos.kernel.version < /dev/null)
     if [[ "$cachyos" != "$kernel".* ]]; then
       echo "error: the patch series targets Linux $kernel, but the CachyOS kernel is $cachyos; nothing was updated" >&2
-      exit 1
+      exit 10
     fi
 
     mesa_version=$(awk -v run="$run" '

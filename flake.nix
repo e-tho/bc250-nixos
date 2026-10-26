@@ -126,18 +126,27 @@
             runtimeInputs = [ pkgs.nix-update ];
             text = ''
               failed=()
+              mismatch=
               ${lib.concatStrings (
                 lib.mapAttrsToList (attr: flags: ''
                   nix-update --flake ${lib.escapeShellArgs flags} ${attr} || failed+=(${attr})
                 '') updatable
               )}
+              status=0
               ${lib.getExe (pkgs.callPackage ./pkgs/linux-cachyos-bc250/update.nix { })} \
-                pkgs/linux-cachyos-bc250/manifest.json || failed+=(linux-cachyos-bc250)
+                pkgs/linux-cachyos-bc250/manifest.json || status=$?
+              case "$status" in
+                0) ;;
+                10) mismatch=1 ;;
+                *) failed+=(linux-cachyos-bc250) ;;
+              esac
 
               if [ "''${#failed[@]}" -gt 0 ]; then
                 echo "failed to update: ''${failed[*]}" >&2
                 exit 1
               fi
+              # Exit status 10: only the kernel branches differ.
+              [ -z "$mismatch" ] || exit 10
             '';
           }
         );

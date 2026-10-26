@@ -1,0 +1,47 @@
+name: Update
+
+on:
+  schedule:
+    - cron: "0 4 * * 1,4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            accept-flake-config = false
+      - name: Update
+        run: |
+          nix flake update
+          : > "$RUNNER_TEMP/body.md"
+          status=0
+          nix run .#update || status=$?
+          if [ "$status" -eq 10 ]; then
+            kernel=$(nix eval --raw --inputs-from . \
+              chaotic#legacyPackages.x86_64-linux.linuxPackages_cachyos.kernel.version < /dev/null)
+            git checkout flake.lock
+            nix flake update nixpkgs
+            nix run .#update
+            echo "Chaotic Nyx kept at its previous revision, as its kernel $kernel is not on the branch the patch series targets." > "$RUNNER_TEMP/body.md"
+          elif [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+        env:
+          # Avoids GitHub's rate limits when looking up new versions.
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: peter-evans/create-pull-request@v8
+        with:
+          # The default token cannot trigger the CI on the pull request.
+          token: ${{ secrets.UPDATE_TOKEN }}
+          branch: update
+          delete-branch: true
+          title: "chore: update flake inputs and packages"
+          commit-message: "chore: update flake inputs and packages"
+          body-path: ${{ runner.temp }}/body.md

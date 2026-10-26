@@ -27,6 +27,8 @@ mesa.overrideAttrs (prev: {
   ''
   + (prev.postPatch or "");
 
+  separateDebugInfo = false;
+
   meta = prev.meta // {
     description = "Mesa with the AMD BC-250 patch series";
     longDescription = ''

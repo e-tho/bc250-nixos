@@ -5,7 +5,7 @@
 }:
 
 let
-  version = "0.1.0";
+  version = "0-unstable-2026-10-23";
 in
 rustPlatform.buildRustPackage {
   pname = "bc250-smu-patch";

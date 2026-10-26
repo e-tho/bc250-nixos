@@ -39,7 +39,7 @@ jobs:
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
           # Pull requests read the cache, but only main pushes to it.
           skipPush: ${{ github.event_name != 'push' }}
-          # Sources and debug symbols are not worth caching.
-          pushFilter: '(-source$|-vendor(-staging)?$|-debug$|\.tar\.(gz|xz|zst)$)'
+          # Sources are fetched from upstream, so only builds are cached.
+          pushFilter: '(-source$|-vendor(-staging)?$|\.tar\.(gz|xz|zst)$)'
       - name: Check and build
         run: nix flake check --print-build-logs $NYX

@@ -33,7 +33,9 @@
     }
 
     (lib.mkIf config.hardware.bc250.swapFile.enable {
-      swapDevices = lib.mkDefault [
+      # nixos-generate-config writes an empty swap list when it finds no
+      # swap, which must not replace the file.
+      swapDevices = lib.mkAfter [
         {
           device = "/var/lib/swapfile";
           size = 16384;

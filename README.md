@@ -49,7 +49,7 @@ Later rebuilds use the caches configured by the module.
 - **Kernel**: the CachyOS kernel from [Chaotic Nyx](https://github.com/chaotic-cx/nyx), which the patch series targets.
 - **GPU governor**: adapts GPU clocks and voltage to load, through [cyan-skillfish-governor](https://github.com/filippor/cyan-skillfish-governor).
 - **Sensors**: fan and board sensors, through [nct6687d](https://github.com/Fred78290/nct6687d).
-- **Swap**: zswap with a 16 GB swap file. zram is refused, as it [crashes memory-hungry games](https://elektricm.github.io/amd-bc250-docs/system/power/#swap-and-zram-optimization) when the GPU takes memory on demand. Setting `swapDevices` replaces the default swap file.
+- **Swap**: zswap with a 16 GB swap file. zram is refused, as it [crashes memory-hungry games](https://elektricm.github.io/amd-bc250-docs/system/power/#swap-and-zram-optimization) when the GPU takes memory on demand.
 - **ntsync**: the kernel driver Proton uses for Windows synchronization primitives.
 
 `bc250-cu-live-manager`, `bc250-detect` and `bc250memcfg` are on the PATH.

@@ -113,6 +113,8 @@
           hardware.bc250.driverPatch.enable = false;
           hardware.bc250.coreUnlock.enable = true;
         };
+        # nixos-generate-config's output when it finds no swap.
+        eval-generated-swap = evalCheck "generated-swap" { swapDevices = [ ]; };
       };
 
       # Updates versions and hashes in place, without committing. Expects to

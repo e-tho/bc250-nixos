@@ -60,6 +60,7 @@ Later rebuilds use the caches configured by the module.
 hardware.bc250 = {
   acpiFix.enable = true;
   driverPatch.enable = true;
+  swapFile.enable = true;
   coreUnlock.enable = false;
   cuUnlock = {
     enable = false;

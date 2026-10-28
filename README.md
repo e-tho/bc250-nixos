@@ -148,6 +148,24 @@ programs.steam.extraCompatPackages = [
 
 Select them per game in Steam, under Properties > Compatibility. They override the game's upscaler (ideally DLSS) with HelixSR in DirectX 12 games and FSR4 in DirectX 11 and Vulkan games. Set `PROTON_USE_OPTISCALER=fsr411f` in the launch options to use FSR4 in DirectX 12 games. OptiScaler's in-game overlay (opened by pressing Insert) shows the active upscaler.
 
+## UGREEN DP-to-HDMI adapter firmware
+
+`bc250-ch7218-fw` flashes UGREEN DP-to-HDMI 2.1 adapters built on a Chrontel CH7218A. It includes UGREEN's updater, UGREEN's firmware and copies with a [watchdog fix](https://github.com/MastaG/linux-cachyos-bc250/blob/main/packages/bc250-ch7218-fw/README.md) for black screens after the display is turned off. The package is unfree, since UGREEN's files carry no license:
+
+```nix
+environment.systemPackages = [ pkgs.bc250-ch7218-fw ];
+```
+
+Flash from SSH, as the picture turns off during the write:
+
+```console
+sudo bc250-ch7218-flash status
+sudo bc250-ch7218-flash flash tmds --dry-run
+sudo bc250-ch7218-flash flash tmds
+```
+
+The new firmware runs after the adapter is power-cycled.
+
 ## See also
 
 - [BC-250 documentation](https://elektricm.github.io/amd-bc250-docs/)

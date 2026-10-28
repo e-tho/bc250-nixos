@@ -16,10 +16,12 @@
       inherit (nixpkgs) lib;
       system = "x86_64-linux";
 
-      # The Proton builds include NVIDIA components under an unfree
+      # Packages under an unfree license: the Proton builds include NVIDIA
+      # components, and the CH7218 updater and images from UGREEN carry no
       # license. This only allows them in this flake's own outputs; a
       # system using them allows the license in its own configuration.
-      unfreeTools = [
+      unfreePackages = [
+        "bc250-ch7218-fw"
         "proton-cachyos-slr-bc250"
         "protonge-latest-bc250"
       ];
@@ -27,7 +29,7 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ self.overlays.default ];
-        config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) unfreeTools;
+        config.allowUnfreePredicate = pkg: lib.elem (lib.getName pkg) unfreePackages;
       };
 
       kernelPackages = pkgs.bc250-linuxPackages;
@@ -85,6 +87,7 @@
       packages.${system} = {
         inherit (pkgs)
           bc250-acpi-fix
+          bc250-ch7218-fw
           bc250-core-unlock
           bc250-cu-live-manager
           bc250-memcfg
@@ -102,7 +105,7 @@
         };
       };
 
-      checks.${system} = removeAttrs self.packages.${system} unfreeTools // {
+      checks.${system} = removeAttrs self.packages.${system} unfreePackages // {
         eval-default = evalCheck "default" { };
         eval-unlocked = evalCheck "unlocked" {
           hardware.bc250.coreUnlock.enable = true;

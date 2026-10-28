@@ -1,4 +1,4 @@
-# Source of the kernel and Mesa patch series, at the revision
+# Source of the linux-cachyos-bc250 repository, at the revision
 # manifest.json pins.
 { lib, fetchFromGitHub }:
 

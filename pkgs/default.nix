@@ -3,6 +3,7 @@
 # modules/hardware/driver-patch.nix.
 final: prev: {
   bc250-acpi-fix = final.callPackage ./bc250-acpi-fix { };
+  bc250-ch7218-fw = final.callPackage ./bc250-ch7218-fw { };
   bc250-core-unlock = final.callPackage ./bc250-core-unlock { };
   bc250-cu-live-manager = final.callPackage ./bc250-cu-live-manager { };
   bc250-memcfg = final.callPackage ./bc250-memcfg { };

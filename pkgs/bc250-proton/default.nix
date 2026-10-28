@@ -1,4 +1,4 @@
-# Proton builds with the upscaling payload, as the patch series
+# Proton builds with the upscaling payload, as the linux-cachyos-bc250
 # repository publishes them. A tool is rebuilt only when its own inputs
 # change, and the release keeps its newest three builds, so a pin stays
 # fetchable until three newer builds of that tool are published.

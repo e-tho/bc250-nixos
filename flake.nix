@@ -87,6 +87,7 @@
       packages.${system} = {
         inherit (pkgs)
           bc250-acpi-fix
+          bc250-cec
           bc250-ch7218-fw
           bc250-core-unlock
           bc250-cu-live-manager
@@ -118,6 +119,7 @@
         };
         # nixos-generate-config's output when it finds no swap.
         eval-generated-swap = evalCheck "generated-swap" { swapDevices = [ ]; };
+        eval-cec = evalCheck "cec" { services.bc250-cec.enable = true; };
       };
 
       # Updates versions and hashes in place, without committing. Expects to

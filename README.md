@@ -81,6 +81,11 @@ services.bc250-smu-oc = {
   enable = false;
   settings.overclock = { }; # values from bc250-detect
 };
+
+services.bc250-cec = {
+  enable = false;
+  settings = { }; # BC250_CEC_* keys
+};
 ```
 
 ### CPU cores
@@ -134,6 +139,21 @@ services.bc250-smu-oc = {
 
 > [!WARNING]
 > Raising the frequency without undervolting can push the CPU voltage past safe limits and permanently damage the board.
+
+### CEC
+
+`services.bc250-cec.enable` runs [bc250-cec](https://github.com/MastaG/linux-cachyos-bc250#optional-bc-250-cec), for DP-to-HDMI adapters that tunnel CEC. When the display turns on or switches back to the board without a signal, the picture is restored. The service also maps the TV remote's OK and Back buttons to Enter and Escape, and identifies the board as `SteamOS` on the CEC bus.
+
+Check that the adapter tunnels CEC with `nix shell nixpkgs#v4l-utils -c cec-ctl --list-devices`.
+
+`services.bc250-cec.settings` takes the keys listed in the [default configuration](https://github.com/MastaG/linux-cachyos-bc250/blob/main/packages/bc250-cec/bc250-cec.conf):
+
+```nix
+services.bc250-cec.settings = {
+  # Switches the TV and audio receiver to the board when the TV turns on.
+  BC250_CEC_SWITCH_INPUT_ON_POWER_ON = true;
+};
+```
 
 ## Proton
 

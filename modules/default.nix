@@ -10,6 +10,7 @@
     ./hardware/sensors.nix
     ./hardware/smu-patch.nix
     ./hardware/vram.nix
+    ./services/bc250-cec.nix
     ./services/bc250-smu-oc.nix
     ./services/cyan-skillfish-governor-smu.nix
   ];

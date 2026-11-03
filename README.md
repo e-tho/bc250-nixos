@@ -48,7 +48,7 @@ Later rebuilds use the caches configured by the module.
 - **Patched drivers**: fixes and optimizations for the kernel drivers and Mesa, from the [linux-cachyos-bc250](https://github.com/MastaG/linux-cachyos-bc250/blob/main/docs/PATCHES.md) patch series.
 - **Kernel**: the CachyOS kernel from [Chaotic Nyx](https://github.com/chaotic-cx/nyx), which the patch series targets.
 - **GPU governor**: adapts GPU clocks and voltage to load, through [cyan-skillfish-governor](https://github.com/filippor/cyan-skillfish-governor).
-- **Sensors**: fan and board sensors, through [nct6687d](https://github.com/Fred78290/nct6687d).
+- **Sensors**: fan and board sensors, through [nct6687d](https://github.com/Fred78290/nct6687d), and VRM sensors, through [bc250-vrm-dkms](https://github.com/Hexxeh/bc250-vrm-dkms).
 - **Swap**: zswap with a 16 GB swap file. zram is refused, as it [crashes memory-hungry games](https://elektricm.github.io/amd-bc250-docs/system/power/#swap-and-zram-optimization) when the GPU takes memory on demand.
 - **ntsync**: the kernel driver Proton uses for Windows synchronization primitives.
 

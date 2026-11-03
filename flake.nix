@@ -41,6 +41,7 @@
         bc250-memcfg = [ "--version=branch" ];
         bc250-smu-oc = [ "--version=branch" ];
         bc250-smu-patch = [ "--version=branch" ];
+        bc250-vrm = [ ];
         cyan-skillfish-governor-smu = [ "--version=branch=smu" ];
         nct6687d = [ "--version=branch" ];
       };
@@ -104,6 +105,9 @@
         bc250-kernel-modules = pkgs.bc250-kernelBuildPackages.callPackage ./pkgs/bc250-kernel-modules {
           inherit (kernelPackages) kernel;
           inherit (pkgs) linux-cachyos-bc250-src;
+        };
+        bc250-vrm = pkgs.bc250-kernelBuildPackages.callPackage ./pkgs/bc250-vrm {
+          inherit (kernelPackages) kernel;
         };
         nct6687d = pkgs.bc250-kernelBuildPackages.callPackage ./pkgs/nct6687d {
           inherit (kernelPackages) kernel;

@@ -12,6 +12,7 @@ in
 {
   boot.extraModulePackages = [
     (buildModule ../../pkgs/nct6687d)
+    (buildModule ../../pkgs/bc250-vrm)
   ];
   boot.kernelModules = [ "nct6687" ];
   boot.extraModprobeConfig = ''

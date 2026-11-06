@@ -11,13 +11,13 @@
 
 rustPlatform.buildRustPackage {
   pname = "cyan-skillfish-governor-smu";
-  version = "0.4.14-unstable-2026-10-02";
+  version = "0.4.15-unstable-2026-11-04";
 
   src = fetchFromGitHub {
     owner = "filippor";
     repo = "cyan-skillfish-governor";
-    rev = "7b08fdcf542d1edd82f3a9077c902038019c9842";
-    hash = "sha256-9MLUtRVefOr4omMcW9QC3sYV+amPCyBgm6dmlJo9/bo=";
+    rev = "34cea69cdf617d1ad05edc71c4c61df501a13c8e";
+    hash = "sha256-nt6M1rWv9eOC7ic3kcR3clggBZt3A37oCpk5q8Xban8=";
   };
 
   cargoHash = "sha256-zlAVGLGnub2Gc0Bkzb5GU9NBAJ2YWLhIG8JOa+1wHx8=";

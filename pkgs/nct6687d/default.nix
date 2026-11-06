@@ -15,14 +15,14 @@ let
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "nct6687d";
-  version = "0-unstable-2026-11-01";
+  version = "0-unstable-2026-11-04";
   name = "${finalAttrs.pname}-${finalAttrs.version}-${kernel.version}";
 
   src = fetchFromGitHub {
     owner = "Fred78290";
     repo = "nct6687d";
-    rev = "25421f527f47007d95c310cfa6c2aa97c42edd81";
-    hash = "sha256-rWHrqXLCbnQjO5PLpIiO5wqeWUF4O19B9euPqabGUGw=";
+    rev = "bac1ed281aa6a3daaad43597b580a681f2bb85e1";
+    hash = "sha256-PRPZENKSHmJUkhYI9lW5acRpMXVlABslIuOtJ4V1U1c=";
   };
 
   nativeBuildInputs = kernel.moduleBuildDependencies;

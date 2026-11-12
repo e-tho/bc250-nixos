@@ -1,16 +1,16 @@
 {
-  "version": "0-unstable-2026-11-10",
-  "rev": "98112c13d1df7d1be0e7b2ac373dc92ba3dc53d2",
-  "hash": "sha256-MWE9tg+XkUSE+6D2mnfKR+WfCF2Ewj8zaQGudVl+Mhs=",
+  "version": "0-unstable-2026-11-11",
+  "rev": "e2cba49ca8d8ce05988db4266da8deba8f3c10ef",
+  "hash": "sha256-mirZ329kSjRCML2+Ijs6l8k3B3oX872Dfmzt91QPmqE=",
   "kernel": "7.3",
   "proton": {
     "proton-cachyos-slr-bc250": {
-      "version": "11.0.20261015-411",
-      "hash": "sha256-Za0YSROwrXlJvaHRDOYBnyXLyB4DfUq3B8X4IHx0iHk="
+      "version": "11.0.20261015-420",
+      "hash": "sha256-Zt8PNMtbi5LYenjAAoyVl151R6BRMoEo2fthe7mmB84="
     },
     "protonge-latest-bc250": {
-      "version": "11.12-411",
-      "hash": "sha256-OgqY6KzxMSub1YjI+zViLzckz7T7neROZqKfBF5M9K8="
+      "version": "11.12-420",
+      "hash": "sha256-UVLJwCWmsyrMHmi+cgzvqTcp/WUJt+KOSCPbR4HRars="
     }
   },
   "mesa": {

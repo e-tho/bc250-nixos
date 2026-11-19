@@ -144,6 +144,9 @@
               mismatch=
               ${lib.concatStrings (
                 lib.mapAttrsToList (attr: flags: ''
+                  # nix-update evaluates the flake from its source's store
+                  # path, which this creates.
+                  nix flake archive --no-write-lock-file . >/dev/null
                   nix-update --flake ${lib.escapeShellArgs flags} ${attr} || failed+=(${attr})
                 '') updatable
               )}

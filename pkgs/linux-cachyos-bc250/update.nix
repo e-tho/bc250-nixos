@@ -36,8 +36,14 @@ writeShellApplication {
     api="https://api.github.com/repos/$owner/$repo"
     tools=(proton-cachyos-slr-bc250 protonge-latest-bc250)
 
-    branch=$(curl -fsSL "$api" | jq -r .default_branch)
-    latest=$(curl -fsSL "$api/actions/workflows/build-release.yml/runs?branch=$branch&status=completed&per_page=1" |
+    # Unauthenticated API requests from CI runners share a low rate limit.
+    auth=()
+    if [ -n "''${GITHUB_TOKEN:-}" ]; then
+      auth=(-H "Authorization: Bearer $GITHUB_TOKEN")
+    fi
+
+    branch=$(curl -fsSL "''${auth[@]}" "$api" | jq -r .default_branch)
+    latest=$(curl -fsSL "''${auth[@]}" "$api/actions/workflows/build-release.yml/runs?branch=$branch&status=completed&per_page=1" |
       jq -r '.workflow_runs[0] // empty | "\(.head_sha) \(.run_number) \(.head_commit.timestamp[:10])"')
     if [ -z "$latest" ]; then
       echo "error: no finished release build on $branch; nothing was updated" >&2
